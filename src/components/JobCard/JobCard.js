@@ -1,14 +1,12 @@
 import React from 'react';
 import {TouchableOpacity, View, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import jobsData from '../../assets/jobsData';
 
 import styles from './JobCard.style';
 
-function JobCard({navigation, jobID}) {
-  const job = jobsData.find(item => item.id === jobID);
+function JobCard({navigation, job}) {;
   const goToJob = () => {
-    navigation.navigate('JobScreen', {jobID: job.id});
+    navigation.navigate('JobScreen', {job: job});
   }
   
   return (

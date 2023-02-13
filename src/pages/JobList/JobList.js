@@ -8,7 +8,7 @@ import JobCard from '../../components/JobCard';
 
 function JobList({navigation}) {
   const renderJob = ({item}) => {
-    return <JobCard navigation={navigation} jobID={item.id} />;
+    return <JobCard navigation={navigation} job={item} />;
   }
   const makeJobKey = () => uid();
   

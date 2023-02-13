@@ -1,32 +1,36 @@
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView, FlatList, Text} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import JobCard from '../../components/JobCard';
+import useGetFavorites from '../../hooks/useGetFavorites';
 
 import styles from './Favorites.style';
 
-function Favorites() {
+function Favorites({navigation}) {
   const [favorites, setFavorites] = useState([]);
+
   const getData = async () => {
-    console.log("Veri alınmaya başladı")
-    try {
-      const jsonValue = await AsyncStorage.getItem('@favorites');
-      console.log('veri alındı');
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (e) {
-      console.log('Favoriler alınamadı.', e);
-    }
+    const data = await useGetFavorites();
+    setFavorites(data);
   };
 
+  const renderJob = ({item}) => <JobCard navigation={navigation} job={item} />;
+
   useEffect(() => {
-    console.log("favoriler sayfası başlatıldı")
-    const data = getData();
-    setFavorites(data);
-    console.log(favorites)
+    getData();
   }, []);
+
   return (
     <SafeAreaView style={styles.container}>
-      <Text>Favorites</Text>
-      {console.log(favorites)}
+      {(
+        <FlatList
+          data={favorites}
+          renderItem={renderJob}
+          style={styles.job_list}
+        />
+      )}
+      {
+        !favorites.length && <Text style={styles.no_job}>Favorilere ekli hiç bir iş bulunmuyor.</Text>
+      }
     </SafeAreaView>
   );
 }

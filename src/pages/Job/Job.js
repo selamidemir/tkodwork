@@ -3,26 +3,44 @@ import {SafeAreaView, View, Text, Button} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import styles from './Job.style';
+import useGetFavorites from '../../hooks/useGetFavorites';
 
-import jobsData from '../../assets/jobsData';
+function Job({navigation, route}) {
+  const [inFavorites, setInFavorites] = useState();
+  const [favorites, setFavorites] = useState([]);
+  const {job} = route.params;
 
-function Job({route}) {
-  const {jobID} = route.params;
-  const [job, setJob] = useState({});
+  const init = async () => {
+    setFavorites(await useGetFavorites());
+    console.log(favorites);
+    let isInFavorites = favorites.findIndex(item => item.id === job.id);
+    isInFavorites = isInFavorites < 0 ? false : true;
+    setInFavorites(isInFavorites);
+    console.log('In favorites : ', inFavorites);
+  };
 
-  const handleAddFavorites = async () => {
-    console.log('İşlem başladı');
+  const handleFavorites = async () => {
     try {
-      await AsyncStorage.setItem('@favorites', JSON.stringify(job));
-      console.log('veri eklendi', job);
+      let jsonValue = null;
+      if (inFavorites) {
+        // İşi favorilerden çıkar
+        const newFavorites = favorites.filter(item => item.id !== job.id);
+        jsonValue = JSON.stringify(newFavorites);
+      } else {
+        // İşi favorilere kayıt et
+        jsonValue = JSON.stringify([...favorites, job]);
+      }
+
+      await AsyncStorage.setItem('favorites', jsonValue);
+      setInFavorites(!inFavorites);
     } catch (e) {
       console.log('İş favorilere eklenmedi.', e);
     }
   };
 
   useEffect(() => {
-    setJob(jobsData.find(item => item.id === jobID));
-  }, [jobID]);
+    init();
+  }, [inFavorites]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,11 +50,15 @@ function Job({route}) {
         <Text style={styles.city}>{job.city}</Text>
         <Text style={styles.job_title}>{job.jobTitle}</Text>
       </View>
-      <Button
-        style={styles.btn_add}
-        title="Add Favorites"
-        onPress={() => handleAddFavorites()}
-      />
+      <View style={styles.btn_add}>
+        <Button
+          title={!inFavorites ? 'Add Favorites' : 'Remove Favorites'}
+          onPress={handleFavorites}
+        />
+      </View>
+      <View style={styles.btn_go_back}>
+        <Button title="Job List" onPress={() => navigation.goBack()} />
+      </View>
     </SafeAreaView>
   );
 }

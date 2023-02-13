@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationContainer} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -33,7 +32,7 @@ function JobScreen({route}) {
 function App() {
   return (
     <NavigationContainer>
-      <Drawer.Navigator>
+      <Drawer.Navigator screenOptions={{unmountOnBlur: true}}>
         <Drawer.Screen
           name="JobsScreen"
           component={JobList}
