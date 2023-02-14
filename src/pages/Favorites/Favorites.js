@@ -1,23 +1,15 @@
-import React, {useEffect, useState} from 'react';
+
 import {SafeAreaView, FlatList, Text} from 'react-native';
+import { useSelector } from 'react-redux';
 import JobCard from '../../components/JobCard';
 import useGetFavorites from '../../hooks/useGetFavorites';
 
 import styles from './Favorites.style';
 
 function Favorites({navigation}) {
-  const [favorites, setFavorites] = useState([]);
-
-  const getData = async () => {
-    const data = await useGetFavorites();
-    setFavorites(data);
-  };
+  const favorites = useSelector(s => s.favorites);
 
   const renderJob = ({item}) => <JobCard navigation={navigation} job={item} />;
-
-  useEffect(() => {
-    getData();
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
